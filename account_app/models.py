@@ -17,7 +17,7 @@ class Account(CustomAbstractUser):
 
 
     # For later use
-    def clean(self):pass
+    def clean(self): pass
 
 
     def save(self, *args, **kwargs):
@@ -30,4 +30,3 @@ class Account(CustomAbstractUser):
 
 
     def __str__(self): return f'User - {self.email}'
-

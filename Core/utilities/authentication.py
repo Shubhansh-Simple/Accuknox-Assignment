@@ -24,7 +24,7 @@ class CustomModelBackend(ModelBackend):
             if ' ' not in username:
 
                 # Getting user through their email ( insensitive )
-                if '@' in username: user = UserModel.objects.filter(email__iexact=username)
+                if '@' in username and '.' in username: user = UserModel.objects.filter(email__iexact=username)
 
                 # Checking for user's password if user exists
                 if user and user.exists() and user.first().check_password(password): return user.first()
