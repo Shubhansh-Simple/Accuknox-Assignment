@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 
     # local apps
     'account_app',
+    'social_app',
 ]
 
 MIDDLEWARE = [
