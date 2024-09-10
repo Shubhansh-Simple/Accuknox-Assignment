@@ -133,6 +133,11 @@ class FriendRequestAcceptAPIView(APIView):
     URL     - /request-accept/<int:pk>
     PAYLOAD - {}
     ALLOWED - Authenticate User
+
+    Response Example
+        {
+            "detail" : "Friend request accepted successfully"
+        }
     '''
 
     def post(self, request, pk):
@@ -150,7 +155,7 @@ class FriendRequestAcceptAPIView(APIView):
             with transaction.atomic():
 
                 # Change friend request status to 'accepted' ( in FriendRequest Model )
-                friend_request.status = STATUS_CHOICES[1][0]   # accepted
+                friend_request.status = STATUS_CHOICES[1][0]   # 'accepted'
                 friend_request.save()
 
                 # Make them friend ( in Friendship Model )
@@ -160,7 +165,7 @@ class FriendRequestAcceptAPIView(APIView):
                 return Response({"detail" : "Friend request accepted successfully"}, status=status.HTTP_200_OK)
 
         except Exception as e:
-            print('Exception raised - ',e)                      # Debugging
+            print('Exception raised - ',e)                     # Debugging
 
             # Error
             error       = {"detail" : "Unable to accept friend request. Please try again later"}
@@ -170,8 +175,50 @@ class FriendRequestAcceptAPIView(APIView):
             return Response(error, status=status_code)
 
 
+#################################
+# FRIEND REQUEST REJECT APIVIEW #
+#################################
+class FriendRequestRejectAPIView(APIView):
+    '''
+    User able to reject recieved pending friend request of other users
+    --------------------------------------------------
+    METHOD  - POST
+    URL     - /request-reject/<int:pk>
+    PAYLOAD - {}
+    ALLOWED - Authenticate User
 
+    Response Example
+        {
+            "detail" : "Friend request rejected successfully"
+        }
+    '''
 
+    def post(self, request, pk):
+
+        # Get recieved pending friend request
+        friend_request = GetPendingFriendRequest(pk, request.user.id)
+
+        # No pending friend request exists
+        if not friend_request:
+            return Response({"detail" : "No pending friend request found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Friend request exists
+        try:
+            friend_request.status = STATUS_CHOICES[2][0]   # 'rejected'
+            friend_request.save()
+
+            # Success Message
+            return Response({"detail" : "Friend request rejected successfully"}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print('Exception raised - ',e)                 # Debugging
+
+            # Error
+            error       = {"detail" : "Unable to reject friend request. Please try again later"}
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+            # Internal Server Error
+            return Response(error, status=status_code)
 
 
 
