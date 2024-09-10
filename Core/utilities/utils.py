@@ -35,7 +35,7 @@ def get_current_time_with_tz():
 def IsUserExistsAndActive(user_id):
     '''Check weather user exists and is active for a given user_id'''
 
-    # Return in input is invalid
+    # Return None if input is invalid
     if not isinstance(user_id, int): return None
 
     # Check if a user exists with the given ID and is active

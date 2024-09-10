@@ -10,6 +10,7 @@ LIST OF VIEW CLASSES IN THIS FILE
 '''
 
 # django
+from django.db        import transaction
 from django.db.models import Q
 
 # rest_framework
@@ -21,9 +22,12 @@ from rest_framework.generics import ListAPIView
 # local
 from Core.utilities.utils import IsUserExistsAndActive, STATUS_CHOICES
 from social_app.models    import FriendRequest, Friendship
-from .serializers         import FriendListSerializer
+from social_app.utils     import GetPendingFriendRequest
+#from .serializers         import FriendListSerializer
 
-
+###############################
+# FRIEND REQUEST SENT APIVIEW #
+###############################
 class FriendRequestSentAPIView(APIView):
     '''
     User able to send friend request to any active users ( specified by pk ) through this view
@@ -117,6 +121,53 @@ class FriendRequestSentAPIView(APIView):
             return Response(error, status=status_code)
 
 
+#################################
+# FRIEND REQUEST ACCEPT APIVIEW #
+#################################
+class FriendRequestAcceptAPIView(APIView):
+    '''
+    Users able to accept their recieved pending friend request from other users through this view
+
+    --------------------------------------------------
+    METHOD  - POST
+    URL     - /request-accept/<int:pk>
+    PAYLOAD - {}
+    ALLOWED - Authenticate User
+    '''
+
+    def post(self, request, pk):
+
+        # Get recieved pending friend request
+        friend_request = GetPendingFriendRequest(pk, request.user.id)
+        print('Friend request - ',friend_request)
+
+        # No pending friend request exists
+        if not friend_request:
+            return Response({"detail" : "No pending friend request found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Friend request exists
+        try:
+            with transaction.atomic():
+
+                # Change friend request status to 'accepted' ( in FriendRequest Model )
+                friend_request.status = STATUS_CHOICES[1][0]   # accepted
+                friend_request.save()
+
+                # Make them friend ( in Friendship Model )
+                Friendship.objects.create(user1_id=request.user.id, user2_id=friend_request.reciever_id)
+
+                # Success Message
+                return Response({"detail" : "Friend request accepted successfully"}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print('Exception raised - ',e)                      # Debugging
+
+            # Error
+            error       = {"detail" : "Unable to accept friend request. Please try again later"}
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+            # Internal Server Error
+            return Response(error, status=status_code)
 
 
 
