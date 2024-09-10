@@ -4,18 +4,15 @@
 from django.db           import models
 from django.contrib.auth import get_user_model
 
+# local
+from Core.utilities.utils import STATUS_CHOICES
+
 
 ########################
 # FRIEND REQUEST MODEL #
 ########################
 class FriendRequest(models.Model):
     '''Storing friend requests of users'''
-
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('accepted', 'Accepted'),
-        ('rejected', 'Rejected')
-    ]
 
     sender     = models.ForeignKey(get_user_model(), related_name='sent_requests',     on_delete=models.CASCADE)
     reciever   = models.ForeignKey(get_user_model(), related_name='recieved_requests', on_delete=models.CASCADE)
@@ -29,7 +26,7 @@ class FriendRequest(models.Model):
         verbose_name_plural = 'Friend Requests'
 
 
-    def __str__(self): return f'{sender} - {reciever}'
+    def __str__(self): return f'{self.sender} - {self.reciever} {[self.status]}'
 
 
 ####################

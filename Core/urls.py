@@ -11,6 +11,9 @@ urlpatterns = [
     path('administration/', admin.site.urls),
 
     # for account app
+    path('friends/', include('social_app.apis.urls') ),
+
+    # for social app
     path('users/', include('account_app.apis.urls') ),
 ]
 

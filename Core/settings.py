@@ -139,6 +139,11 @@ AUTHENTICATION_BACKENDS = [
 
 REST_FRAMEWORK = {
 
+    # Use JWT token for authentication
+    'DEFAULT_AUTHENTICATION_CLASSES' : [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+
     # User atleast need to be authenticated to access any endpoint
     'DEFAULT_PERMISSION_CLASSES' : [
         'rest_framework.permissions.IsAuthenticated'

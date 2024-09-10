@@ -29,4 +29,4 @@ class Account(CustomAbstractUser):
         super().save(*args, **kwargs)
 
 
-    def __str__(self): return f'User - {self.email}'
+    def __str__(self): return f'{self.email}'

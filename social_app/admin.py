@@ -2,6 +2,7 @@
 
 # django
 from django.contrib import admin
+from django.forms   import ValidationError
 
 # local
 from .models import FriendRequest, Friendship
@@ -16,6 +17,16 @@ class FriendRequestAdmin(admin.ModelAdmin):
     # To improve visibility in admin site
     readonly_fields = ('id', )
     list_display    = ('sender', 'reciever', 'status', 'created_at', 'id')
+
+    def save_model(self, request, obj, form, change):
+
+        print('Its save_model function.')
+
+        # Check weather sender and reciever are the same person
+        if obj.sender == obj.reciever: raise ValidationError('You cannot friend reqest to yourself.')
+
+        # Save the model if no error raised
+        return super().save_model(request, obj, form, change)
 
 # Register your models here.
 admin.site.register(FriendRequest, FriendRequestAdmin)
