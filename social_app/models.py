@@ -45,4 +45,4 @@ class Friendship(models.Model):
         verbose_name_plural = 'Friendships'
 
 
-    def __str__(self): return f'{user1} - {user2}'
+    def __str__(self): return f'{self.user1} - {self.user2}'

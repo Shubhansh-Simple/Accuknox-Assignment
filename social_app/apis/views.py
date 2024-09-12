@@ -159,7 +159,7 @@ class FriendRequestAcceptAPIView(APIView):
                 friend_request.save()
 
                 # Make them friend ( in Friendship Model )
-                Friendship.objects.create(user1_id=request.user.id, user2_id=friend_request.reciever_id)
+                Friendship.objects.create(user1_id=request.user.id, user2_id=friend_request.sender_id)
 
                 # Success Message
                 return Response({"detail" : "Friend request accepted successfully"}, status=status.HTTP_200_OK)
