@@ -2,16 +2,17 @@
 
 '''
 LIST OF VIEW CLASSES IN THIS FILE
+    - FriendListAPIView
     - FriendRequestSentAPIView
     - FriendRequestAcceptAPIView
     - FriendRequestRejectAPIView
-    - FriendListAPIView
     - FriendRequestPendingListAPIView
 '''
 
 # django
-from django.db        import transaction
-from django.db.models import Q
+from django.db           import transaction
+from django.db.models    import Q
+from django.contrib.auth import get_user_model
 
 # rest_framework
 from rest_framework          import status
@@ -23,7 +24,48 @@ from rest_framework.generics import ListAPIView
 from Core.utilities.utils import IsUserExistsAndActive, STATUS_CHOICES
 from social_app.models    import FriendRequest, Friendship
 from social_app.utils     import GetPendingFriendRequest
-#from .serializers         import FriendListSerializer
+from .serializers         import FriendListSerializer, FriendRequestPendingListSerializer
+
+
+####################
+# FRIEND LIST VIEW #
+####################
+class FriendListAPIView(ListAPIView):
+    '''
+    List of users who are friend of requested user
+
+    --------------------------------------------------
+    METHOD  - GET
+    URL     - /
+    PAYLOAD - {}
+    ALLOWED - Authenticate User
+    '''
+
+    serializer_class = FriendListSerializer
+
+    def get_queryset(self):
+        '''Return friend list of the authenticated user'''
+
+        requested_user_id = self.request.user.id
+        
+        # Fetching IDs where the user is either user1 or user2
+        friendship_ids = Friendship.objects.filter(
+                            Q(user1_id=requested_user_id) | Q(user2_id=requested_user_id)
+                         ).values_list('user1', 'user2')
+
+        # Collecting all unique friends ids
+        friend_ids = set()
+
+        for user1_id, user2_id in friendship_ids:
+
+            # If the current user is user1, the friend is user2, and vice versa
+            friend_ids.add( user2_id if user1_id == requested_user_id else user1_id)
+
+        # Fetching all User objects for these IDs
+        return get_user_model().objects.filter(
+                    id__in=friend_ids
+               ).values('id', 'email', 'first_name', 'last_name', 'is_active', 'created_at')
+
 
 ###############################
 # FRIEND REQUEST SENT APIVIEW #
@@ -221,21 +263,26 @@ class FriendRequestRejectAPIView(APIView):
             return Response(error, status=status_code)
 
 
+#######################################
+# FRIEND REQUEST PENDING LIST APIVIEW #
+#######################################
+class FriendRequestPendingListAPIView(ListAPIView):
+    '''
+    User can see all pending friend requests received by them
 
+    --------------------------------------------------
+    METHOD  - GET
+    URL     - /request-pending-list
+    PAYLOAD - {}
+    ALLOWED - Authenticate User
+    '''
 
+    serializer_class = FriendRequestPendingListSerializer
 
+    def get_queryset(self):
+        '''Return pending friend requests received by the authenticated user'''
 
-
-
-
-
-
-
-
-
-######################
-# FRIENDLIST APIVIEW #
-######################
-class FriendListAPIView(ListAPIView):
-
-    pass
+        return FriendRequest.objects.filter(
+                reciever_id=self.request.user.id,
+                status=STATUS_CHOICES[0][0]               # 'pending'
+        ).values('id', 'sender__email', 'created_at')
