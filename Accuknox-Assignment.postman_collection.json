@@ -1,0 +1,261 @@
+{
+	"info": {
+		"_postman_id": "6c6823c5-e1dd-4cc0-af59-72d86b9f70e3",
+		"name": "Accuknox-Assignment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31251517"
+	},
+	"item": [
+		{
+			"name": "Social Network Section",
+			"item": [
+				{
+					"name": "Get list of friends",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_something}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/friends/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"friends",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pending Friend Request List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_mayank}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/friends/request-pending-list/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"friends",
+								"request-pending-list",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sent friend request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_something}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/friends/request-sent/7/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"friends",
+								"request-sent",
+								"7",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accept friend request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_mayank}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/friends/request-accept/12/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"friends",
+								"request-accept",
+								"12",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject friend request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_yogesh}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/friends/request-reject/8/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"friends",
+								"request-reject",
+								"8",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Section",
+			"item": [
+				{
+					"name": "User Login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\" : \"SHUBHanshu@gMAil.COM\",\n    \"password\" : \"something@\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/login/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\" : \"hindi@gmail.com\",\n    \"password\" : \"something@\",\n    \"confirm_password\" : \"something@\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/signup/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"signup",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user lists or search them",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_something}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/?q=brijesh@GMAIL.com",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								""
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "brijesh@GMAIL.com",
+									"description": "It searches by exact email or partial name of the users"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
