@@ -189,7 +189,6 @@ class UserListAPIView(ListAPIView):
         # Apply search conditions
         if search_keyword:
 
-
             # SEARCH BY EMAIL #
 
             # OPTIMIZATION - We search users by their email only when search_keyword looks like an email

@@ -10,15 +10,19 @@ LIST OF VIEW CLASSES IN THIS FILE
 '''
 
 # django
-from django.db           import transaction
-from django.db.models    import Q
-from django.contrib.auth import get_user_model
+from django.db               import transaction
+from django.db.models        import Q
+from django.contrib.auth     import get_user_model
+from django.utils.decorators import method_decorator
 
 # rest_framework
 from rest_framework          import status
 from rest_framework.views    import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
+
+# django_ratelimit
+from django_ratelimit.decorators import ratelimit
 
 # local
 from Core.utilities.utils         import IsUserExistsAndActive, STATUS_CHOICES
@@ -84,6 +88,7 @@ class FriendListAPIView(ListAPIView):
 ###############################
 # FRIEND REQUEST SENT APIVIEW #
 ###############################
+@method_decorator(ratelimit(key='user', rate='3/m', method='POST', block=False), name='dispatch')
 class FriendRequestSentAPIView(APIView):
     '''
     User able to send friend request to any active users ( specified by pk ) through this view
@@ -119,6 +124,10 @@ class FriendRequestSentAPIView(APIView):
 
     def post(self, request, pk):
 
+        # Restrict user to send more than 3 friend requests within a minute
+        if request.limited:
+            return Response( {"detail" : "Rate limit exceeded. Please try again later"},
+                             status=status.HTTP_429_TOO_MANY_REQUESTS)
         # Debugging
         print('Value of pk - ',pk)
         print('Requested user - ',request.user, request.user.id)
