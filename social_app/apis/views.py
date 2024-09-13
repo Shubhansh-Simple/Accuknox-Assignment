@@ -21,10 +21,11 @@ from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 
 # local
-from Core.utilities.utils import IsUserExistsAndActive, STATUS_CHOICES
-from social_app.models    import FriendRequest, Friendship
-from social_app.utils     import GetPendingFriendRequest
-from .serializers         import FriendListSerializer, FriendRequestPendingListSerializer
+from Core.utilities.utils         import IsUserExistsAndActive, STATUS_CHOICES
+from account_app.apis.serializers import UserListSerializer
+from social_app.models            import FriendRequest, Friendship
+from social_app.utils             import GetPendingFriendRequest
+from .serializers                 import FriendRequestPendingListSerializer
 
 
 ####################
@@ -39,15 +40,28 @@ class FriendListAPIView(ListAPIView):
     URL     - /
     PAYLOAD - {}
     ALLOWED - Authenticate User
+
+    Response Example
+        [
+            {
+                "id"         : 1,
+                "email"      : "someone@gmail.com",
+                "first_name" : "Someone",
+                "last_name"  : "Random",
+                "is_active"  : true,
+                "created_at" : "2024-09-07T21:42:08.154814+05:30"
+            },
+            {...}, {...}, {...}
+        ]
     '''
 
-    serializer_class = FriendListSerializer
+    serializer_class = UserListSerializer
 
     def get_queryset(self):
         '''Return friend list of the authenticated user'''
 
         requested_user_id = self.request.user.id
-        
+
         # Fetching IDs where the user is either user1 or user2
         friendship_ids = Friendship.objects.filter(
                             Q(user1_id=requested_user_id) | Q(user2_id=requested_user_id)
@@ -275,6 +289,16 @@ class FriendRequestPendingListAPIView(ListAPIView):
     URL     - /request-pending-list
     PAYLOAD - {}
     ALLOWED - Authenticate User
+
+    Response Example
+        [
+            {
+                "id"         : 13,
+                "sender"     : "someone@gmail.com",
+                "created_at" : "2024-09-12T19:59:33.293090+05:30"
+            },
+            {...}, {...}, {...}
+        ]
     '''
 
     serializer_class = FriendRequestPendingListSerializer

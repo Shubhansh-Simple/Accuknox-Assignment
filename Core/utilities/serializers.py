@@ -23,7 +23,7 @@ class BaseSignupSerializer(serializers.ModelSerializer):
 
     Payload
         {
-            "username"         : "something@email.com",
+            "username"         : "something@email.com",          # i.e. email in this case
             "password"         : "Your-password-here",
             "confirm_password" : "Your-confirm-password-here"
         }

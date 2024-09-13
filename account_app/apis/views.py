@@ -4,22 +4,26 @@
 LIST OF VIEW CLASSES IN THIS FILE
     - AccountLoginAPIView
     - AccountSignupAPIView
+    - UserSearchByEmailAndName
 '''
 
 # django
-from django.contrib.auth import authenticate
+from django.db.models       import Q
+from django.contrib.auth    import authenticate, get_user_model
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 # rest_framework
 from rest_framework          import status
 from rest_framework.views    import APIView
 from rest_framework.response import Response
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView
 
 # simplejwt
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # local
-from .serializers import AccountLoginSerializer, AccountSignupSerializer
+from .serializers import AccountLoginSerializer, AccountSignupSerializer, UserListSerializer
 
 
 ##################
@@ -140,3 +144,80 @@ class AccountSignupAPIView(CreateAPIView):
 
         # Bad request
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+###############################
+# USER SEARCH BY EMAIL & NAME #
+###############################
+class UserListAPIView(ListAPIView):
+    '''
+    Retrieves the list of users, excluding the current user.
+
+    If a search keyword is provided:
+      - Filters users by an exact match on email (case-insensitive),
+      - Or partial matches on first name or last name (case-insensitive).
+
+    If no search keyword is provided, the method returns the entire list of users (excluding the current user)
+
+    --------------------------------------------------
+    METHOD  - GET
+    URL     - /
+    PAYLOAD - {}
+    ALLOWED - Authenticate User
+
+    Response Example
+        [
+            {
+                "id"         : 1,
+                "email"      : "someone@gmail.com",
+                "first_name" : "Someone",
+                "last_name"  : "Random",
+                "is_active"  : true,
+                "created_at" : "2024-09-07T21:42:08.154814+05:30"
+            },
+            {...}, {...}, {...}
+        ]
+    '''
+    serializer_class = UserListSerializer
+
+    def get_queryset(self):
+        search_keyword = self.request.query_params.get('q', '').strip()
+        User           = get_user_model()
+
+        print(f'Search keyword - "{search_keyword}", {len(search_keyword)}, {type(search_keyword)}')
+
+        # Apply search conditions
+        if search_keyword:
+
+
+            # SEARCH BY EMAIL #
+
+            # OPTIMIZATION - We search users by their email only when search_keyword looks like an email
+            # (Since it's an exact match)
+            if '@' in search_keyword and '.' in search_keyword:
+
+                try:
+                    validate_email(search_keyword)                               # Avoid querying database for invalid emails
+                    return User.objects.filter(email__iexact=search_keyword)     # case-insensitive
+                except ValidationError:
+                    pass
+
+            # SEARCH BY NAMES #
+            print('Looking through names')
+
+            # Search user by first_name or last_name
+            return User.objects.filter(
+                        Q(first_name__icontains=search_keyword) |  # Partial match for first_name
+                        Q(last_name__icontains=search_keyword)     # Partial match for last_name
+                   )
+
+        # If no search_keyword provided return all users excluding requested user
+        return User.objects.exclude(id=self.request.user.id)
+
+
+    def list(self, request, *args, **kwargs):
+        '''Adding pagination later'''
+
+        #queryset = self.get_queryset()
+        return super().list(request, *args, **kwargs)
+
