@@ -23,7 +23,8 @@ from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # local
-from .serializers import AccountLoginSerializer, AccountSignupSerializer, UserListSerializer
+from Core.utilities.utils   import IsOnlyChar
+from .serializers           import AccountLoginSerializer, AccountSignupSerializer, UserListSerializer
 
 
 ##################
@@ -189,29 +190,28 @@ class UserListAPIView(ListAPIView):
         # Apply search conditions
         if search_keyword:
 
-            # SEARCH BY EMAIL #
-
-            # OPTIMIZATION - We search users by their email only when search_keyword looks like an email
-            # (Since it's an exact match)
-            if '@' in search_keyword and '.' in search_keyword:
-
-                try:
-                    validate_email(search_keyword)                               # Avoid querying database for invalid emails
-                    return User.objects.filter(email__iexact=search_keyword)     # case-insensitive
-                except ValidationError:
-                    pass
-
             # SEARCH BY NAMES #
-            print('Looking through names')
+            if IsOnlyChar(search_keyword):
+                '''Assuming names can only contain letters (i.e. a-z or A-Z) and spaces'''
 
-            # Search user by first_name or last_name
-            return User.objects.filter(
-                        Q(first_name__icontains=search_keyword) |  # Partial match for first_name
-                        Q(last_name__icontains=search_keyword)     # Partial match for last_name
-                   )
+                # Search user by first_name or last_name
+                return User.objects.filter(
+                            Q(first_name__icontains=search_keyword) |  # Partial match for first_name
+                            Q(last_name__icontains=search_keyword)     # Partial match for last_name
+                       )
+
+            # SEARCH BY EMAIL #
+            try:
+                validate_email(search_keyword)                               # Avoid querying database for invalid emails
+                return User.objects.filter(email__iexact=search_keyword)     # Exact email match, case-insensitive
+            except ValidationError:
+                pass
+
+            # Return empty queryset, if not match found
+            return User.objects.none()
 
         # If no search_keyword provided return all users excluding requested user
-        return User.objects.exclude(id=self.request.user.id)
+        else: return User.objects.exclude(id=self.request.user.id)
 
 
     def list(self, request, *args, **kwargs):
@@ -219,4 +219,3 @@ class UserListAPIView(ListAPIView):
 
         #queryset = self.get_queryset()
         return super().list(request, *args, **kwargs)
-
