@@ -16,6 +16,7 @@ import datetime
 from django.contrib.auth import get_user_model
 
 # rest_framework
+from rest_framework.response   import Response
 from rest_framework.pagination import PageNumberPagination
 
 
@@ -50,10 +51,39 @@ class CustomPageNumberPagination(PageNumberPagination):
     
     For eg  - To fetch the record of second page with 5 records per page, we will use following url
         URL - "http://192.168.43.98:8000/users/?page=2&page_size=5"
+
+    Response Example
+        {
+            "count"    : 3,
+            "next"     : "http://192.168.43.98:8000/users/?page=2&page_size=2&q=ch",
+            "previous" : null,
+            "detail"   : [
+                {
+                    "id": 3,
+                    "email": "himanshu@gmail.com",
+                    "first_name": "himanshu",
+                    "last_name": "chourasia",
+                    "is_active": true,
+                    "created_at": "2024-09-12T19:26:09.142974+05:30"
+                },
+                {...}, {...}, {...}
+            ]
+        }
     '''
-    page_size             = 2
+
+    page_size             = 10
     page_size_query_param = 'page_size'   # ?page_size=10, to mention total records per page
     max_page_size         = 10
+
+    def get_paginated_response(self, data):
+        '''Return following response format for paginated result'''
+
+        return Response({
+            'count'    : self.page.paginator.count,      # total records found
+            'next'     : self.get_next_link(),           # next paginated page link
+            'previous' : self.get_previous_link(),       # previous paginated page link
+            'detail'   : data                            # actual data from database
+        })
 
 
 ##############################
