@@ -21,6 +21,7 @@ class FriendRequest(models.Model):
 
 
     class Meta:
+        ordering            = ['id']
         unique_together     = ('sender', 'reciever')
         verbose_name        = 'Friend Request'
         verbose_name_plural = 'Friend Requests'
@@ -40,6 +41,7 @@ class Friendship(models.Model):
     created_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        ordering            = ['id']
         unique_together     = ('user1', 'user2')
         verbose_name        = 'Friendship'
         verbose_name_plural = 'Friendships'

@@ -11,6 +11,7 @@ class Account(CustomAbstractUser):
     '''Override django's default user model for adding more fields'''
 
     class Meta:
+        ordering            = ['id']
         db_table            = 'account_app_account'
         verbose_name        = 'Account'
         verbose_name_plural = 'Accounts'
