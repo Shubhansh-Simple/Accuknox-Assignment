@@ -158,7 +158,10 @@ class UserListAPIView(ListAPIView):
       - Filters users by an exact match on email (case-insensitive),
       - Or partial matches on first name or last name (case-insensitive).
 
-    If no search keyword is provided, the method returns the entire list of users (excluding the current user)
+      for eg.  URL - "http://192.168.43.98:8000/users/?q=something@gmail.com"  # for searching user by email
+               URL - "http://192.168.43.98:8000/users/?q=shub"                 # for searching user by first_name or last_name
+
+    If no search keyword is provided, then method returns the entire list of users (excluding the current user)
 
     --------------------------------------------------
     METHOD  - GET
@@ -212,10 +215,3 @@ class UserListAPIView(ListAPIView):
 
         # If no search_keyword provided return all users excluding requested user
         else: return User.objects.exclude(id=self.request.user.id)
-
-
-    def list(self, request, *args, **kwargs):
-        '''Adding pagination later'''
-
-        #queryset = self.get_queryset()
-        return super().list(request, *args, **kwargs)

@@ -1,10 +1,22 @@
 # Core/utilities/utils.py
 
+'''
+LIST OF CONSTANT, FUNCTION & CLASSES IN THIS FILE
+    - STATUS_CHOICES
+    - get_current_time_with_tz
+    - CustomPageNumberPagination
+    - IsUserExistsAndActive
+    - IsOnlyChar
+'''
+
 # python
 import datetime
 
 # django
 from django.contrib.auth import get_user_model
+
+# rest_framework
+from rest_framework.pagination import PageNumberPagination
 
 
 #################################
@@ -27,6 +39,21 @@ def get_current_time_with_tz():
 
     timezone = datetime.timezone.utc
     return datetime.datetime.now(timezone)
+
+
+#################################
+# CUSTOM PAGE NUMBER PAGINATION #
+#################################
+class CustomPageNumberPagination(PageNumberPagination):
+    '''
+    Custom page number pagination to paginate the queryset into small datasets
+    
+    For eg  - To fetch the record of second page with 5 records per page, we will use following url
+        URL - "http://192.168.43.98:8000/users/?page=2&page_size=5"
+    '''
+    page_size             = 2
+    page_size_query_param = 'page_size'   # ?page_size=10, to mention total records per page
+    max_page_size         = 10
 
 
 ##############################

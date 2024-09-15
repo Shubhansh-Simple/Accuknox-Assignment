@@ -148,6 +148,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES' : [
         'rest_framework.permissions.IsAuthenticated'
     ],
+
+    # GLOBAL PAGINATION
+    'DEFAULT_PAGINATION_CLASS' : 'Core.utilities.utils.CustomPageNumberPagination',
 }
 
 
