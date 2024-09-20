@@ -111,7 +111,7 @@ After applying the migrations, restart the container to run the application
 
 - **Example Request**:
   ```http
-  GET /users/login/ HTTP/1.1
+  POST /users/login/ HTTP/1.1
   Host: http://localhost:8000/users/login/
   Authorization: Bearer YOUR_ACCESS_TOKEN
   Content-Type: application/json
