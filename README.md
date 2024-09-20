@@ -75,7 +75,7 @@ After applying the migrations, restart the container to run the application
   ```
 
 ### API Endpoints 
-<b>NoTE</b> : Requests must include <i><b>strict forward slashes</b></i> at the end for proper routing
+<b>NOTE</b> : Requests must include <i><b>strict forward slashes</b></i> at the end for proper routing
 
 
 ### User Endpoints
@@ -99,4 +99,43 @@ After applying the migrations, restart the container to run the application
 | POST | Yes | /friends/request-reject/1/ | Reject a friend request with ID 1 |
 
 
+## Available Endpoints
 
+### 1. Endpoint 1
+
+- **URL**: `/users/login/`
+- **Method**: `POST`
+- **Description**: Authenticate a user and return JWT token
+- **Parameters**:
+  - `param1`: N/A
+
+- **Example Request**:
+  ```http
+  GET /users/login/ HTTP/1.1
+  Host: http://localhost:8000/users/login/
+  Authorization: Bearer YOUR_ACCESS_TOKEN
+  Content-Type: application/json
+  ```
+  ```json
+  {
+    "username" : "SHUBHanshu@gMAil.COM",
+    "password" : "something@"
+  }
+  ```
+
+- **Example Response**:
+  ```json
+  {
+    "id" : 10,
+    "access" : "jdaskfjadksglkaiwfjja.dfkapkgtasd.asldgjkasg",
+    "refresh" : "jdaskfjadksglkaiwfjja.dfkapkgtasd.asldgjkakh"
+  }
+  ```
+
+## Error Handling
+
+  ```json
+  {
+      "detail": "Invalid username or password. Please try again."
+  }
+  ```
