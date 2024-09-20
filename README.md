@@ -66,23 +66,37 @@ After applying the migrations, restart the container to run the application
   http://localhost:8000/
   ```
 
-If you do not have Docker installed in your system, you can still run the same with the commands below.
+## Authentication
 
-- Create a virtual Environment
-- Install the required libraries and modules: ```pip3 install -r requirements.txt```
-- Populate the .env file with the below configuration.
-  Example:
+  Accuknox-Assignment API uses JWT token-based authentication. To authenticate requests, include an `Authorization` header in the following format:
+
   ```
-  DEBUG=True
-  SECRET_KEY='Your secret_key here'
+  Authorization: Bearer YOUR_ACCESS_TOKEN
   ```
 
-- Also, Create a new DB for the same.
-- Run the migrations command
-  ```sh
-  python manage.py makemigrations
-  ```
-  ```sh
-  python manage.py migrate
-  ```
-- Run the server: ```python manage.py runserver```
+### API Endpoints 
+<b>NoTE</b> : Requests must include <i><b>strict forward slashes</b></i> at the end for proper routing
+
+
+### User Endpoints
+
+| HTTP Method | Authentication | Endpoint | Description |
+| --- | --- | --- | --- |
+| POST | No | /users/signup/  | Register a new user |
+| POST | No | /users/login/   | Authenticate user and return a JWT token |
+| GET | Yes | /users/  | Return list of users with pagination of 10 records |
+| GET | Yes | /users/?q='jai'  | Search users by firstname or lastname. Partial matches are supported |
+| GET | Yes | /users/?q='some@gmail.com'  | Search users by exact email address |
+
+### Friends Endpoints
+
+| HTTP Method | Authentication | Endpoint | Description |
+| --- | --- | --- | --- |
+| GET | Yes | /friends/ | Retrieve a list of your friends |
+| GET | Yes | /friends/request-pending-list/ | Retrieve a list of pending friend requests recieved. |
+| POST | Yes | /friends/request-sent/7/ | Sent friend request to user with ID 7 |
+| POST | Yes | /friends/request-accept/1/ | Accept a friend request with ID 1 |
+| POST | Yes | /friends/request-reject/1/ | Reject a friend request with ID 1 |
+
+
+
